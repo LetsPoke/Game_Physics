@@ -9,14 +9,17 @@ var canvasWidth = window.innerWidth;
 var canvasHeight = window.innerHeight;
 /* width: 1cm = 28.9cm */
 var widthScale = 0.029;
-var frmRate = 10;
+var frmRate = 60;
 
 var ballX, ballY;
-
 var Xnull, Ynull;
 var Sc;
-
 var dt, t, speed;
+
+var move = false;
+var mouseOverNew = false;
+var mouseOverReset = false;
+
 
 function setup() {							/* here are program-essentials to put */
   createCanvas(windowWidth, windowHeight);
@@ -32,33 +35,19 @@ function setup() {							/* here are program-essentials to put */
   ballX = 0;
   ballY = 0;
 
-  button = createButton('click me');
-  button.position(0,0);
-  button.mousePressed(moveBall);
-
-  button = createButton('click me too');
-  button.position(20,20);
-  button.mousePressed(resetBall);
 }
-
-function moveBall(){
-  while(ballX > -150){
-    ballX = ballX - 10;
-  }
-}
-function resetBall(){
-  ballX = 0;
-  speed = 0;
-}
-
 
 function draw() {							/* here is the dynamic part to put */
 	/* administrative work */
   
-
 	/* calculations */
   t = t * dt;
-  speed = 10*Sc*t
+  speed = (12.46*Sc)/frmRate
+
+  //Ziel 3,6 m/s -> 28.9cm = 1*Sc 360cm/28.9cm = 12.46*Sc pro sekunde
+  if(move && ballX > -3.5*Sc){
+    ballX = ballX -= speed;
+  }
 
 	/* display */
   translate(Xnull, Ynull); 
@@ -113,17 +102,29 @@ function draw() {							/* here is the dynamic part to put */
 
 
   textAlign(CENTER, CENTER);
-  //textSize(2.0*fontSize); 
-  //reset button
-  fill(255, 0, 0);
+  //reset button idea taken from: https://editor.p5js.org/kjhollen/sketches/ryb3DHY6Z
+  if(overRect(Xnull-22.3*Sc, Xnull-(22.3 - 3)*Sc, Ynull+2.25*Sc, Ynull+3.65*Sc)){
+    fill(200, 0, 0);
+    mouseOverReset = true;
+  }else{
+    fill(255, 0,0)
+    mouseOverReset = false;
+  }
   rect(-(22.3 - 1.5)*Sc, 3*Sc, 3*Sc, 1.4*Sc, 20)
   fill(0);
-  text("NEW", -(22.3 - 1.5)*Sc, 3*Sc);
-  //new button
-  fill(0,255,0);
+  text("RESET", -(22.3 - 1.5)*Sc, 3*Sc);
+
+  //new button idea taken from: https://editor.p5js.org/kjhollen/sketches/ryb3DHY6Z
+  if(overRect(Xnull-0.6*Sc, Xnull+2.4*Sc, Ynull+2.25*Sc, Ynull+3.75*Sc)){
+    fill(0, 200, 0);
+    mouseOverNew = true;
+  }else{
+    fill(0, 255,0)
+    mouseOverNew = false;
+  }
   rect(0.9*Sc, 3*Sc, 3*Sc, 1.4*Sc, 20)
   fill(0);
-  text("RESET", 0.9*Sc, 3*Sc);
+  text("NEW", 0.9*Sc, 3*Sc);
 }
 
 function windowResized() {					/* responsive part */
@@ -132,6 +133,21 @@ function windowResized() {					/* responsive part */
   resizeCanvas(windowWidth, windowHeight);
 }
 
-function drawMap(){
+function overRect(x, x2, y, y2) {
+	if (mouseX > x && mouseX < x2 && mouseY > y && mouseY < y2) {
+	  return true;	
+	} else {
+	  return false;	
+	}
+}
 
+function mouseClicked(){
+  if(mouseOverNew){
+    move = true;
+  }
+
+  if(mouseOverReset){
+    ballX = 0;
+    move = false;
+  }
 }
