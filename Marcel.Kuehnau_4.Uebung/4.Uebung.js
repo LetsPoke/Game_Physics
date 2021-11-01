@@ -37,12 +37,11 @@ function setup() {							/* here are program-essentials to put */
   ballX = 0;
   ballY = 0.61*Sc - 10;
 
+  textSize(26);
 }
 
 function draw() {							/* here is the dynamic part to put */
 	/* administrative work */
-  //state machine
-  
   
 	/* calculations */
   //Ziel 3,6 m/s -> 28.9cm = 1*Sc 360cm/28.9cm = 12.46*Sc pro sekunde
@@ -51,7 +50,6 @@ function draw() {							/* here is the dynamic part to put */
   speed = (6.92*Sc)/frmRate;
   angle = speed*0.45;
 
-  
   if(move){
     startState = true;
     if(ballX > -3.5*Sc && startState){
@@ -66,18 +64,18 @@ function draw() {							/* here is the dynamic part to put */
       slope1Backward = false;
       plane1Backward = false;
     }
-    if(ballX > -6.6*Sc && ballX < -6.5*Sc && slope1Forward){
+    if(ballX > -6.6*Sc && ballX < -6.5*Sc){
       plane1Forward = false;
       slope1Forward = false;
       slope1Backward = true;
       plane1Backward = false;
     }
-    if(ballX == -3.5*Sc && slope1Backward){
+    if(ballX > -3.6*Sc && ballX < -3.5*Sc && slope1Backward){
       plane1Forward = false;
       slope1Forward = false;
       slope1Backward = false;
       plane1Backward = true;
-      move = false
+      move = false; 
     }
   }
   if(startState){
@@ -89,12 +87,10 @@ function draw() {							/* here is the dynamic part to put */
     }else if(slope1Backward){
       ballY = ballY += angle;
       ballX = ballX += speed;
-    }else if(plane1Backward){
+    }else if(plane1Backward && ballX < 2*Sc){
       ballX = ballX += speed;
     }
   }
-
-
 
 	/* display */
   translate(Xnull, Ynull); 
@@ -197,6 +193,11 @@ function mouseClicked(){
     ballX = 0;
     ballY = 0.61*Sc - 10;
     move = false;
+    startState = false;
+    plane1Forward = false;
+    slope1Forward = false;
+    slope1Backward = false;
+    plane1Backward = false;
   }
 }
 
