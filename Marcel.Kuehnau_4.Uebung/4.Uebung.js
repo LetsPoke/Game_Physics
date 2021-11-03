@@ -7,146 +7,51 @@ Uebung 4
 /* template GTAT2 Game Technology & Interactive Systems */
 var canvasWidth = window.innerWidth;
 var canvasHeight = window.innerHeight;
-/* width: 1cm = 28.9cm */
-var widthScale = 0.029;
-var frmRate = 60;
 
-var ballX, ballY;
-var Xnull, Ynull;
-var Sc;
-var dt, t, speed, angle;
+var widthScale = 0.029;                                                                       // width: 1cm = 28.9cm
+var frmRate = 60;                                                                             // Screen-Refreshrate
 
-var move = false;
-var mouseOverNew = false;
-var mouseOverReset = false;
+var ballX, ballY;                                                                             // Golfball
+var Xnull, Ynull;                                                                             // Nullpunkt
+var Sc;                                                                                       // Scale
+var t, dt;                                                                                    // Zeitvariable, Increment der Zeitvariable
+var speed, angle, s, a;                                                                       // Ballgeschwindigkeit, Winkel der 1.Slope
+var ms = 3.6;                                                                                 // Geschwindigkeit in m/s
 
-var startState = false, plane1Forward = false, slope1Forward = false, slope1Backward = false, plane1Backward = false;
+var move = false;                                                                             // Variable "New" button
+var mouseOverNew = false;                                                                     // Maus über button abfrage
+var mouseOverReset = false;                                                                   // Maus über button abfrage
+
+var startState = false, plane1Forward = false, slope1Forward = false;                         // boolean deklaration zur status abfrage
+var slope1Backward = false, plane1Backward = false;   
 
 
 function setup() {							/* here are program-essentials to put */
   createCanvas(windowWidth, windowHeight);
-  frameRate(frmRate);
+  frameRate(frmRate);                                                                         // setzen der Bildwechselfrequenz
 
-  Xnull = width/2 + (10*widthScale*canvasWidth); //translate the mid point from the mid to the point i want 
-  Ynull = height/2 + (3.4*widthScale*canvasHeight); //translate the mid point from the mid to the point i want 
-  Sc = widthScale*canvasWidth;
-  t = second();
-  dt = t/frmRate;
+  Xnull = width/2 + (10*widthScale*canvasWidth);                                              // Nullpunkt festlegen
+  Ynull = height/2 + (3.4*widthScale*canvasHeight);                                           // Nullpunkt festlegen
+  Sc = widthScale*canvasWidth;                                                                // dynamischer Maßstab
+
+  t = 0;
+  dt = 0;
   speed = 0;
 
-  ballX = 0;
-  ballY = 0.61*Sc - 10;
+  ballX = 0;                                                                                  // Startlage Golfball
+  ballY = 0.61*Sc - 10;                                                                       // Startlage Golfball
 
   textSize(26);
 }
 
 function draw() {							/* here is the dynamic part to put */
 	/* administrative work */
-  
-	/* calculations */
-  //Ziel 3,6 m/s -> 28.9cm = 1*Sc 360cm/28.9cm = 12.46*Sc pro sekunde
-  //Ziel 2,0 m/s -> 28.9cm == 1*Sc ; 200/28.9cm => 6.92*Sc pro sekunde
-  t = t * dt;
-  speed = (6.92*Sc)/frmRate;
-  angle = speed*0.45;
-
-  if(move){
-    startState = true;
-    if(ballX > -3.5*Sc && startState){
-      plane1Forward = true;
-      slope1Forward = false;
-      slope1Backward = false;
-      plane1Backward = false;
-    }
-    if(ballX > -6.6*Sc && ballX < -3.5*Sc && plane1Forward){
-      plane1Forward = false;
-      slope1Forward = true;
-      slope1Backward = false;
-      plane1Backward = false;
-    }
-    if(ballX > -6.6*Sc && ballX < -6.5*Sc){
-      plane1Forward = false;
-      slope1Forward = false;
-      slope1Backward = true;
-      plane1Backward = false;
-    }
-    if(ballX > -3.6*Sc && ballX < -3.5*Sc && slope1Backward){
-      plane1Forward = false;
-      slope1Forward = false;
-      slope1Backward = false;
-      plane1Backward = true;
-      move = false; 
-    }
-  }
-  if(startState){
-    if(plane1Forward){
-      ballX = ballX -= speed;
-    }else if(slope1Forward){
-      ballY = ballY -= angle;
-      ballX = ballX -= speed;
-    }else if(slope1Backward){
-      ballY = ballY += angle;
-      ballX = ballX += speed;
-    }else if(plane1Backward && ballX < 2*Sc){
-      ballX = ballX += speed;
-    }
-  }
-
-	/* display */
   translate(Xnull, Ynull); 
-  
-  //background
-  fill(224,238,220);
-  rectMode(CENTER);
-  rect(-10*Sc, -3.4*Sc, 24.6*Sc, 10*Sc);
-  noStroke();
-
-  //water
-  fill(33,136,143)
-  rect(-12.3*Sc, 1*Sc, 2*Sc, 0.7*Sc);
-
-  //bottom
-  fill(237,125,49);
-  rect(-10*Sc, 1.6*Sc, 24.6*Sc, 0.6*Sc);
-
-  //erklärung rechnung: linker rand - entfernung vom rand - hälfte der länge des rechtecks
-  //leftground
-  rect(-(22.3 - 0 - 2.5)*Sc, 1*Sc, 5*Sc, 0.8*Sc);
-  //midground
-  rect(-(22.3 - 5.7 - 1.7)*Sc, 1*Sc, 3.4*Sc, 0.8*Sc);
-  //rightground
-  rect(-(22.3 - 10.8 - 6.9)*Sc, 1*Sc, 13.8*Sc, 0.8*Sc);
-
-  //lefttriangle
-  triangle(-22.3*Sc, 0.61*Sc, -22.3*Sc, -2.4*Sc, -19.3*Sc, 0.61*Sc);
-
-  //midtriangle
-  triangle(-10*Sc, 0.61*Sc, -6.75*Sc, -0.8*Sc, -3.5*Sc, 0.61*Sc);
-
-  //golf club
-  fill(0,0,0)
-  rect(0*Sc, -0.5*Sc, 0.15*Sc, 2*Sc);
-  fill(255,136,0)
-  circle(-0.2*Sc, 0.25*Sc, 20);
-  
-  //banner
-  fill(0,0,0)
-  rect(-17.8*Sc, -1.3*Sc, 0.1*Sc, 4*Sc);
-  fill(255,255,0)
-  triangle(-19.5*Sc, -2.8*Sc, -17.8*Sc, -2.4*Sc, -17.8*Sc, -3.2*Sc);
-
-  //mid point
-  fill(255, 0, 0);
-  rect(0, 0, 5, 5);
-
-  //ball
-  fill(255,136,255)
-  circle(ballX, ballY, 20);
-
-
   textAlign(CENTER, CENTER);
-  //reset button idea taken from: https://editor.p5js.org/kjhollen/sketches/ryb3DHY6Z
-  if(overRect(Xnull-22.3*Sc, Xnull-(22.3 - 3)*Sc, Ynull+2.25*Sc, Ynull+3.65*Sc)){
+  rectMode(CENTER);
+
+  // reset button idea taken from: https://editor.p5js.org/kjhollen/sketches/ryb3DHY6Z
+  if(overRect(Xnull-22.3*Sc, Xnull-(22.3 - 3)*Sc, Ynull+2.25*Sc, Ynull+3.65*Sc)){             // Reset button erstellen
     fill(200, 0, 0);
     mouseOverReset = true;
   }else{
@@ -158,7 +63,7 @@ function draw() {							/* here is the dynamic part to put */
   text("RESET", -(22.3 - 1.5)*Sc, 3*Sc);
 
   //new button idea taken from: https://editor.p5js.org/kjhollen/sketches/ryb3DHY6Z
-  if(overRect(Xnull-0.6*Sc, Xnull+2.4*Sc, Ynull+2.25*Sc, Ynull+3.75*Sc)){
+  if(overRect(Xnull-0.6*Sc, Xnull+2.4*Sc, Ynull+2.25*Sc, Ynull+3.75*Sc)){                     // New button erstellen
     fill(0, 200, 0);
     mouseOverNew = true;
   }else{
@@ -168,6 +73,83 @@ function draw() {							/* here is the dynamic part to put */
   rect(0.9*Sc, 3*Sc, 3*Sc, 1.4*Sc, 20)
   fill(0);
   text("NEW", 0.9*Sc, 3*Sc);
+  
+	/* calculations */
+  dt = 1/frmRate;                                                                             // Zeitincrement
+  t = t + dt;                                                                                 // Zeit incrementieren     
+  speed = ms-t;                                                                               // Startgeschwindigkeit - zeit                                                       
+  angle = speed*0.45;                                                                         // winkel der 1.slope
+  a = Math.sin(45);
+  s = (1/2) * a * (t*t);                                                                      // Weg-Zeit-Gesetz
+
+  if(move){                                                                                   // abfrage wo sich der ball befindet
+    startState = true;
+    if(ballX > -3.5*Sc && startState){                                                        // ball auf 1. ebene?
+      plane1Forward = true;
+    }
+    if(ballX > -6.6*Sc && ballX < -3.5*Sc && plane1Forward){                                  // ball auf 1. schräge?
+      plane1Forward = false;
+      slope1Forward = true;
+    }
+    if(ballX > -6.6*Sc && ballX < -6.5*Sc){                                                   // ball am höchsten punkt der 1.schräge?
+      t = 0;
+      slope1Forward = false;
+      slope1Backward = true;
+    }
+    if(ballX > -3.6*Sc && ballX < -3.5*Sc && slope1Backward){                                 // ball aufn weg von 1. schräge zu 1. ebene?
+      slope1Backward = false;
+      plane1Backward = true;
+      move = false; 
+    }
+  }
+
+  if(startState){                                                                             // abfrage wo sich der ball bedindet und dementprechende geschwindigkeitswechsel
+    if(plane1Forward){
+      ballX = ballX -= speed;
+    }else if(slope1Forward){
+      ballY = ballY -= angle/s;                                                               // geschwindigkeit / weg zeit => ball wird langsamer
+      ballX = ballX -= speed/s;                                                               
+    }else if(slope1Backward){
+      ballY = ballY += angle*s;                                                               // geschwindigkeit * weg zeit => ball wird schneller
+      ballX = ballX += speed*s;
+    }else if(plane1Backward && ballX < 2*Sc){
+      ballX = ballX += speed*s;
+    }
+  }
+
+	/* display */
+  fill(224,238,220);                                                                          // background
+  rect(-10*Sc, -3.4*Sc, 24.6*Sc, 10*Sc);
+  noStroke();
+
+  fill(33,136,143)                                                                            // water
+  rect(-12.3*Sc, 1*Sc, 2*Sc, 0.7*Sc);
+
+  fill(237,125,49);                                                                           // bottom
+  rect(-10*Sc, 1.6*Sc, 24.6*Sc, 0.6*Sc);
+                                                                                              
+  rect(-(22.3 - 0 - 2.5)*Sc, 1*Sc, 5*Sc, 0.8*Sc);                                             // leftground erklärung rechnung: linker rand - entfernung vom rand - hälfte der länge des rechtecks
+  rect(-(22.3 - 5.7 - 1.7)*Sc, 1*Sc, 3.4*Sc, 0.8*Sc);                                         // midground
+  rect(-(22.3 - 10.8 - 6.9)*Sc, 1*Sc, 13.8*Sc, 0.8*Sc);                                       // rightground
+
+  triangle(-22.3*Sc, 0.61*Sc, -22.3*Sc, -2.4*Sc, -19.3*Sc, 0.61*Sc);                          // lefttriangle
+  triangle(-10*Sc, 0.61*Sc, -6.75*Sc, -0.8*Sc, -3.5*Sc, 0.61*Sc);                             // midtriangle
+
+  fill(0,0,0)                                                                                 // golf club
+  rect(0*Sc, -0.5*Sc, 0.15*Sc, 2*Sc);
+  fill(255,136,0)
+  circle(-0.2*Sc, 0.25*Sc, 20);
+  
+  fill(0,0,0)                                                                                 // banner
+  rect(-17.8*Sc, -1.3*Sc, 0.1*Sc, 4*Sc);
+  fill(255,255,0)
+  triangle(-19.5*Sc, -2.8*Sc, -17.8*Sc, -2.4*Sc, -17.8*Sc, -3.2*Sc);
+  
+  fill(255, 0, 0);                                                                            // mid point
+  rect(0, 0, 5, 5);
+
+  fill(255,136,255)                                                                           // ball
+  circle(ballX, ballY, 20);
 }
 
 function windowResized() {					/* responsive part */
@@ -176,7 +158,7 @@ function windowResized() {					/* responsive part */
   resizeCanvas(windowWidth, windowHeight);
 }
 
-function overRect(x, x2, y, y2) {
+function overRect(x, x2, y, y2) {                                                             // check ob maus über button
 	if (mouseX > x && mouseX < x2 && mouseY > y && mouseY < y2) {
 	  return true;	
 	} else {
@@ -186,13 +168,19 @@ function overRect(x, x2, y, y2) {
 
 function mouseClicked(){
   if(mouseOverNew){
-    move = true;
+    ballX = 0;                                                                                // Startlage Golfball wiederherstellen
+    ballY = 0.61*Sc - 10;
+    t = 0; 
+
+    move = true;                                                                              // Bewegung starten
   }
 
   if(mouseOverReset){
-    ballX = 0;
+    ballX = 0;                                                                                // Startlage Golfball wiederherstellen
     ballY = 0.61*Sc - 10;
-    move = false;
+    t = 0;
+
+    move = false;                                                                             // States zurücksetzen
     startState = false;
     plane1Forward = false;
     slope1Forward = false;
