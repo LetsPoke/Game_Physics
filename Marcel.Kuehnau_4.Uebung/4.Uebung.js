@@ -1,7 +1,7 @@
 /*
 Marcel Kuehnau 573132
 Uebung 4
-01.11.2021 
+07.11.2021 
 */
 
 /* template GTAT2 Game Technology & Interactive Systems */
@@ -16,7 +16,7 @@ var Xnull, Ynull;                                                               
 var Sc;                                                                                       // Scale
 var t, dt;                                                                                    // Zeitvariable, Increment der Zeitvariable
 var speed, angle, s, a;                                                                       // Ballgeschwindigkeit, Winkel der 1.Slope
-var ms = 3.6;                                                                                 // Geschwindigkeit in m/s
+var ms = 2.0;                                                                                 // Geschwindigkeit in m/s
 
 var move = false;                                                                             // Variable "New" button
 var mouseOverNew = false;                                                                     // Maus über button abfrage
@@ -35,7 +35,7 @@ function setup() {							/* here are program-essentials to put */
   Sc = widthScale*canvasWidth;                                                                // dynamischer Maßstab
 
   t = 0;
-  dt = 0;
+  dt = 1/frmRate;                                                                             // Zeitincrement
   speed = 0;
 
   ballX = 0;                                                                                  // Startlage Golfball
@@ -75,9 +75,9 @@ function draw() {							/* here is the dynamic part to put */
   text("NEW", 0.9*Sc, 3*Sc);
   
 	/* calculations */
-  dt = 1/frmRate;                                                                             // Zeitincrement
+                                                                               
   t = t + dt;                                                                                 // Zeit incrementieren     
-  speed = ms-t;                                                                               // Startgeschwindigkeit - zeit                                                       
+  speed = ms * sqrt(t) ;                                                                                 // Startgeschwindigkeit - zeit                                                       
   angle = speed*0.45;                                                                         // winkel der 1.slope
   a = Math.sin(45);
   s = (1/2) * a * (t*t);                                                                      // Weg-Zeit-Gesetz
@@ -87,12 +87,13 @@ function draw() {							/* here is the dynamic part to put */
     if(ballX > -3.5*Sc && startState){                                                        // ball auf 1. ebene?
       plane1Forward = true;
     }
-    if(ballX > -6.6*Sc && ballX < -3.5*Sc && plane1Forward){                                  // ball auf 1. schräge?
+    if(ballX > -6.5*Sc && ballX < -3.5*Sc && plane1Forward){                                  // ball auf 1. schräge?
       plane1Forward = false;
       slope1Forward = true;
     }
-    if(ballX > -6.6*Sc && ballX < -6.5*Sc){                                                   // ball am höchsten punkt der 1.schräge?
+    if(ballX > -6.51*Sc && ballX < -6.49*Sc){                                                   // ball am höchsten punkt der 1.schräge?
       t = 0;
+      s = 0.1;
       slope1Forward = false;
       slope1Backward = true;
     }
@@ -170,7 +171,7 @@ function mouseClicked(){
   if(mouseOverNew){
     ballX = 0;                                                                                // Startlage Golfball wiederherstellen
     ballY = 0.61*Sc - 10;
-    t = 0; 
+    t = 0.01; 
 
     move = true;                                                                              // Bewegung starten
   }
@@ -178,7 +179,7 @@ function mouseClicked(){
   if(mouseOverReset){
     ballX = 0;                                                                                // Startlage Golfball wiederherstellen
     ballY = 0.61*Sc - 10;
-    t = 0;
+    t = 0.01;
 
     move = false;                                                                             // States zurücksetzen
     startState = false;
